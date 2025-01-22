@@ -17,7 +17,7 @@ private:
     std::fstream _dataBase_File;
     float _value;
     std::map<std::string, float> dataBase;
-    void open_files();
+    bool open_files();
     void close_files();
     void readAndStockDatabase();
     bool isValidDatabaseLine(std::string line);

@@ -8,7 +8,7 @@ BitcoinExchange::~BitcoinExchange()
 }
 BitcoinExchange::BitcoinExchange(char **argv) : _dataBase_Name("data.csv"), _inputFile_Name(argv[1]), _value(0) {}
 
-void BitcoinExchange::open_files()
+bool BitcoinExchange::open_files()
 {
     try
     {
@@ -19,7 +19,7 @@ void BitcoinExchange::open_files()
     catch (const std::exception &e)
     {
         std::cerr << e.what() << " => INPUT FILE" << std::endl;
-        return;
+        return false;
     }
 
     try
@@ -31,7 +31,9 @@ void BitcoinExchange::open_files()
     catch (const std::exception &e)
     {
         std::cerr << e.what() << " => DATA BASE FILE" << std::endl;
+        return false;
     }
+    return true;
 }
 void BitcoinExchange::close_files()
 {
@@ -168,7 +170,8 @@ bool BitcoinExchange::lineValidation(std::string str)
 }
 void BitcoinExchange::execute()
 {
-    open_files();
+    if (!open_files())
+        return;
     readAndStockDatabase();
     std::string line;
     while (std::getline(_input_File, line))
