@@ -60,7 +60,7 @@ void BitcoinExchange::readAndStockDatabase()
         }
         catch (const std::exception &e)
         {
-            std::cerr << e.what() << std::left << std::setw(15) << line  << " / line -> " << i << std::endl;
+            std::cerr << e.what() << std::left << std::setw(15) << line << " / line -> " << i << std::endl;
             i++;
             continue;
         }
@@ -160,7 +160,7 @@ bool BitcoinExchange::lineValidation(std::string str)
     }
     catch (const std::exception &e)
     {
-        std::cerr << std::left << std::setw(55) << e.what() << str << std::endl;
+        std::cerr << std::left << std::setw(58) << e.what() << str << std::endl;
         return false;
     }
     return true;
@@ -174,9 +174,39 @@ void BitcoinExchange::execute()
     {
         if (!lineValidation(line))
             continue;
+        if (dataBase.find(line.substr(0, 10)) != dataBase.end())
+            printFinalValue(line);
+        else
+            printPreviousDateValue(line);
     }
-    print_map();
     close_files();
+}
+void BitcoinExchange::printPreviousDateValue(std::string line)
+{
+    try
+    {
+        std::map<std::string, float>::iterator it = dataBase.lower_bound(line.substr(0, 10));
+        if (it == dataBase.begin())
+            throw BitcoinExchange::NoPreviousDateException();
+        --it;
+        std::istringstream iss(line.substr(13));
+        float v;
+        iss >> v;
+        v *= it->second;
+        std::cout << line.substr(0, 10) << " => " << std::right << std::setw(3) << line.substr(13) << " = " << v << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << std::left << std::setw(58) << e.what() << line << std::endl;
+    }
+}
+void BitcoinExchange::printFinalValue(std::string line)
+{
+    std::istringstream iss(line.substr(13));
+    float v;
+    iss >> v;
+    v *= dataBase[line.substr(0, 10)];
+    std::cout << line.substr(0, 10) << " => " << std::right << std::setw(3) << line.substr(13) << " = " << v << std::endl;
 }
 
 //----------------------- print a delete------------------------------
