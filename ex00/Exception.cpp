@@ -14,6 +14,9 @@ const char *BitcoinExchange::NegativeValueException::what() const throw()
 }
 const char *BitcoinExchange::TooHighValue::what() const throw()
 {
-    return ( RED "Error: bad input (value above 1000)   => " RESET);
+    return ( RED "Error: bad input (value above 1000)       => " RESET);
 }
-
+const char *BitcoinExchange::DatabaseLineInvalidException::what() const throw()
+{
+    return ( RED "Database line ignored (wrong format or invalid date/value) => " RESET);
+}

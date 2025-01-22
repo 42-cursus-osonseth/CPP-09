@@ -20,6 +20,7 @@ private:
     void open_files();
     void close_files();
     void readAndStockDatabase();
+    bool isValidDatabaseLine(std::string line);
     bool lineValidation(std::string str);
     bool isValidDate(std::string str);
     int isValidDay(std::string str);
@@ -44,6 +45,9 @@ public:
         const char *what() const throw();
     };
     class TooHighValue : public std::exception{
+        const char *what() const throw();
+    };
+    class DatabaseLineInvalidException : public std::exception{
         const char *what() const throw();
     };
     //------ print a delete ---------

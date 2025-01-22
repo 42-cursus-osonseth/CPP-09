@@ -43,14 +43,41 @@ void BitcoinExchange::readAndStockDatabase()
 {
     std::string line;
     std::getline(_dataBase_File, line);
+    int i = 2;
+    std::cout << YELLOW "-----------DATA BASE PROCESS -------------" << RESET << std::endl;
     while (std::getline(_dataBase_File, line))
     {
-        std::string key = line.substr(0, 10);
-        std::istringstream iss(line.substr(11));
-        float value;
-        iss >> value;
-        dataBase[key] = value;
+        try
+        {
+            if (!isValidDatabaseLine(line))
+                throw BitcoinExchange::DatabaseLineInvalidException();
+            std::string key = line.substr(0, 10);
+            std::istringstream iss(line.substr(11));
+            float value;
+            iss >> value;
+            dataBase[key] = value;
+            i++;
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << std::left << std::setw(15) << line  << " / line -> " << i << std::endl;
+            i++;
+            continue;
+        }
     }
+    std::cout << YELLOW << std::string(42, '-') << RESET << std::endl;
+}
+bool BitcoinExchange::isValidDatabaseLine(std::string line)
+{
+    if (!isValidDate(line.substr(0, 10)))
+        return false;
+    if (line[10] != ',')
+        return false;
+    if (!isValidValue(line.substr(11)))
+        return false;
+    if (_value < 0)
+        return false;
+    return true;
 }
 bool BitcoinExchange::isLeapYear(int year)
 {
@@ -133,7 +160,7 @@ bool BitcoinExchange::lineValidation(std::string str)
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << str << std::endl;
+        std::cerr << std::left << std::setw(55) << e.what() << str << std::endl;
         return false;
     }
     return true;
@@ -148,6 +175,7 @@ void BitcoinExchange::execute()
         if (!lineValidation(line))
             continue;
     }
+    print_map();
     close_files();
 }
 
