@@ -15,6 +15,7 @@ private:
     std::string _inputFile_Name;
     std::fstream _input_File;
     std::fstream _dataBase_File;
+    float _value;
     std::map<std::string, float> dataBase;
     void open_files();
     void close_files();
@@ -25,6 +26,7 @@ private:
     int isValidMonth(std::string str);
     int isValidYear(std::string str);
     bool isValidMiddle(std::string str);
+    bool isValidValue(std::string str);
     bool isLeapYear(int year);
 
 public:
@@ -32,11 +34,18 @@ public:
     BitcoinExchange(char **argv);
     ~BitcoinExchange();
     void execute();
-    class OpenFileFailedException : public std::exception
-    {
+    class OpenFileFailedException : public std::exception{
         const char *what() const throw();
     };
-
+    class BadInputException : public std::exception{
+        const char *what() const throw();
+    };
+    class NegativeValueException : public std::exception{
+        const char *what() const throw();
+    };
+    class TooHighValue : public std::exception{
+        const char *what() const throw();
+    };
     //------ print a delete ---------
     void print_map();
     //-------------------------------

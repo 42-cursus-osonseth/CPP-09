@@ -2,5 +2,18 @@
 
 const char *BitcoinExchange::OpenFileFailedException::what() const throw()
 {
-    return ("Open file failed ");
+    return ( RED "Error: could not open file" RESET);
 }
+const char *BitcoinExchange::BadInputException::what() const throw()
+{
+    return ( RED "Error: bad input (invalid date or format) => " RESET);
+}
+const char *BitcoinExchange::NegativeValueException::what() const throw()
+{
+    return ( RED "Error: bad input (not a positive value)   => " RESET);
+}
+const char *BitcoinExchange::TooHighValue::what() const throw()
+{
+    return ( RED "Error: bad input (value above 1000)   => " RESET);
+}
+

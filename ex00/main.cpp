@@ -1,11 +1,18 @@
 #include "BitcoinExchange.hpp"
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
-    if ( argc != 2)
-        return std::cerr << RED << " Please, enter the name of input file as argument" << RESET << std::endl, 1;
+    try
+    {
+        if (argc != 2)
+            throw BitcoinExchange::OpenFileFailedException();
+        BitcoinExchange btc(argv);
+        btc.execute();
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << e.what() << YELLOW << " => INPUT FILE" << RESET << std::endl;
+    }
 
-    BitcoinExchange btc(argv);
-    btc.execute();
     return 0;
 }

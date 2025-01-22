@@ -6,7 +6,7 @@ BitcoinExchange::BitcoinExchange()
 BitcoinExchange::~BitcoinExchange()
 {
 }
-BitcoinExchange::BitcoinExchange(char **argv) : _dataBase_Name("data.csv"), _inputFile_Name(argv[1]) {}
+BitcoinExchange::BitcoinExchange(char **argv) : _dataBase_Name("data.csv"), _inputFile_Name(argv[1]), _value(0) {}
 void BitcoinExchange::open_files()
 {
     try
@@ -17,7 +17,7 @@ void BitcoinExchange::open_files()
     }
     catch (const std::exception &e)
     {
-        std::cerr << RED << e.what() << ":INPUT FILE" << RESET << std::endl;
+        std::cerr << e.what() << " => INPUT FILE" << std::endl;
         return;
     }
 
@@ -29,7 +29,7 @@ void BitcoinExchange::open_files()
     }
     catch (const std::exception &e)
     {
-        std::cerr << RED << e.what() << ":DATA BASE FILE" << RESET << std::endl;
+        std::cerr << e.what() << " => DATA BASE FILE" << std::endl;
     }
 }
 void BitcoinExchange::close_files()
@@ -101,20 +101,41 @@ bool BitcoinExchange::isValidDate(std::string str)
         return false;
     return true;
 }
-bool BitcoinExchange::isValidMiddle (std::string str)
+bool BitcoinExchange::isValidMiddle(std::string str)
 {
     if (str[0] != ' ' || str[1] != '|' || str[2] != ' ')
         return false;
     return true;
 }
+bool BitcoinExchange::isValidValue(std::string str)
+{
+    std::istringstream iss(str);
+    iss >> _value;
+    if (iss.fail() || !iss.eof())
+        return false;
+    return true;
+}
 bool BitcoinExchange::lineValidation(std::string str)
 {
-    if (!isValidDate(str.substr(0, 10)))
+    try
+    {
+        if (!isValidDate(str.substr(0, 10)))
+            throw BitcoinExchange::BadInputException();
+        if (!isValidMiddle(str.substr(10, 3)))
+            throw BitcoinExchange::BadInputException();
+        if (!isValidValue(str.substr(13)))
+            throw BitcoinExchange::BadInputException();
+        if (_value < 0)
+            throw BitcoinExchange::NegativeValueException();
+        if (_value > 1000)
+            throw BitcoinExchange::TooHighValue();
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << str << std::endl;
         return false;
-    if (!isValidMiddle(str.substr(10, 3)))
-        return false;
-    // std::string value = str.substr(13);
-
+    }
     return true;
 }
 void BitcoinExchange::execute()
@@ -125,7 +146,7 @@ void BitcoinExchange::execute()
     while (std::getline(_input_File, line))
     {
         if (!lineValidation(line))
-            std::cout << "invalid line" << std::endl;
+            continue;
     }
     close_files();
 }
