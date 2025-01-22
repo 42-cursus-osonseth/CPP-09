@@ -7,6 +7,7 @@ BitcoinExchange::~BitcoinExchange()
 {
 }
 BitcoinExchange::BitcoinExchange(char **argv) : _dataBase_Name("data.csv"), _inputFile_Name(argv[1]), _value(0) {}
+
 void BitcoinExchange::open_files()
 {
     try
