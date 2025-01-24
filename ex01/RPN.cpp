@@ -53,7 +53,10 @@ void RPN::execute()
                 long int a = _stack.top();
                 _stack.pop();
                 if (_token[0] == '+')
+                {
+    
                     a += b;
+                }
                 if (_token[0] == '-')
                     a -= b;
                 if (_token[0] == '*')
