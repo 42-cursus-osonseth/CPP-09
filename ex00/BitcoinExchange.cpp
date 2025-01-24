@@ -6,7 +6,7 @@ BitcoinExchange::BitcoinExchange()
 BitcoinExchange::~BitcoinExchange()
 {
 }
-BitcoinExchange::BitcoinExchange(char **argv) : _dataBase_Name("data.csv"), _inputFile_Name(argv[1]), _value(0) {}
+BitcoinExchange::BitcoinExchange(char **argv) : _dataBase_Name("data.csv"), _inputFile_Name(argv[1]), _value(0), _firstLine(true) {}
 
 bool BitcoinExchange::open_files()
 {
@@ -52,6 +52,8 @@ void BitcoinExchange::readAndStockDatabase()
     {
         try
         {
+            if (line.empty())
+                continue;
             if (!isValidDatabaseLine(line))
                 throw BitcoinExchange::DatabaseLineInvalidException();
             std::string key = line.substr(0, 10);
@@ -148,7 +150,8 @@ bool BitcoinExchange::isValidValue(std::string str)
 bool BitcoinExchange::lineValidation(std::string str)
 {
     try
-    {
+    {   if (_firstLine && str == "date | value")
+            return false;
         if (!isValidDate(str.substr(0, 10)))
             throw BitcoinExchange::BadInputException();
         if (!isValidMiddle(str.substr(10, 3)))
@@ -176,8 +179,10 @@ void BitcoinExchange::execute()
     std::string line;
     while (std::getline(_input_File, line))
     {
-        if (!lineValidation(line))
+        if (line.empty() || !lineValidation(line))
             continue;
+        if (_firstLine)
+            _firstLine = false;
         if (dataBase.find(line.substr(0, 10)) != dataBase.end())
             printFinalValue(line);
         else

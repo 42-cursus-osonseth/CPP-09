@@ -16,7 +16,10 @@ private:
     std::fstream _input_File;
     std::fstream _dataBase_File;
     float _value;
+    bool _firstLine;
     std::map<std::string, float> dataBase;
+    BitcoinExchange(const BitcoinExchange &other);
+    BitcoinExchange &operator= (const BitcoinExchange &other);
     bool open_files();
     void close_files();
     void readAndStockDatabase();
