@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stack>
 #include <exception>
+#include <climits>
 #include "Colors.hpp"
 
 class RPN
@@ -13,18 +14,12 @@ private:
     std::string _token;
     std::stack<long int> _stack;
     bool validToken();
-
+    void pushNumber();
+    bool performCalculation();
 
 public:
     RPN();
     RPN(char **argv);
     ~RPN();
     void execute();
-
-
-    //--print a delete
-    void printExpression();
-    void printStack();
-    
 };
-

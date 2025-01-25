@@ -25,6 +25,57 @@ bool RPN::validToken()
     }
     return true;
 }
+void RPN::pushNumber()
+{
+    std::istringstream iss_n(_token);
+    long int n;
+    iss_n >> n;
+    _stack.push(n);
+}
+bool RPN::performCalculation()
+{
+    try
+    {
+        long int b = _stack.top();
+        _stack.pop();
+        long int a = _stack.top();
+        _stack.pop();
+        switch (_token[0])
+        {
+        case '+':
+            if (a > LONG_MAX - b)
+                throw std::overflow_error("Arithmetic overflow occurred.");
+            a += b;
+            break;
+        case '-':
+            if (a < LONG_MIN + b)
+                throw std::overflow_error("Arithmetic underflow occurred.");
+            a -= b;
+            break;
+        case '*':
+            if (a > LONG_MAX / b)
+                throw std::overflow_error("Arithmetic overflow occurred.");
+            a *= b;
+            break;
+        case '/':
+            if (b == 0)
+                throw std::invalid_argument("Division by zero is not allowed.");
+            if (a == LONG_MIN && b == -1)
+                throw std::overflow_error("Arithmetic overflow occurred during division.");
+            a /= b;
+            break;
+        default:
+            break;
+        }
+        _stack.push(a);
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+}
 
 void RPN::execute()
 {
@@ -37,57 +88,20 @@ void RPN::execute()
             if (!validToken())
                 break;
             if (_token[0] >= '0' && _token[0] <= '9')
-            {
-                std::istringstream iss_n(_token);
-                long int n;
-                iss_n >> n;
-                _stack.push(n);
-            }
+                pushNumber();
             else
             {
                 if (_stack.size() < 2)
                     throw std::logic_error("invalid format : less 2 operandes");
-
-                long int b = _stack.top();
-                _stack.pop();
-                long int a = _stack.top();
-                _stack.pop();
-                if (_token[0] == '+')
-                {
-    
-                    a += b;
-                }
-                if (_token[0] == '-')
-                    a -= b;
-                if (_token[0] == '*')
-                    a *= b;
-                if (_token[0] == '/')
-                    a /= b;
-                _stack.push(a);
+                if (!performCalculation())
+                    break;
             }
         }
         if (!_stack.empty())
-        {
-            long int result = _stack.top();
-            std::cout << result << std::endl;
-        }
+            throw std::logic_error("Error : too many operands");
     }
     catch (const std::exception &e)
     {
         std::cerr << e.what() << std::endl;
-    }
-}
-
-//----- print a delete
-void RPN::printExpression()
-{
-    std::cout << _expression << std::endl;
-}
-void RPN::printStack()
-{
-    while (!_stack.empty())
-    {
-        std::cout << _stack.top() << std::endl;
-        _stack.pop();
     }
 }
