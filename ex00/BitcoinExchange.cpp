@@ -217,14 +217,3 @@ void BitcoinExchange::printFinalValue(std::string line)
     v *= dataBase[line.substr(0, 10)];
     std::cout << line.substr(0, 10) << " => " << std::right << std::setw(3) << line.substr(13) << " = " << v << std::endl;
 }
-
-//----------------------- print a delete------------------------------
-
-void BitcoinExchange::print_map()
-{
-    for (std::map<std::string, float>::iterator it = dataBase.begin(); it != dataBase.end(); ++it)
-    {
-        std::cout << "Clé: " << it->first << " - Valeur: " << std::fixed << std::setprecision(2) << it->second << std::endl;
-    }
-}
-//--------------------------------------------------------------------

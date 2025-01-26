@@ -64,7 +64,5 @@ public:
     {
         const char *what() const throw();
     };
-    //------ print a delete ---------
-    void print_map();
-    //-------------------------------
+    
 };
