@@ -2,7 +2,7 @@
 
 PmergeMe::PmergeMe() {}
 PmergeMe::~PmergeMe() {}
-PmergeMe::PmergeMe(char **argv) : size(0), comp_nbr(0)
+PmergeMe::PmergeMe(char **argv) : size(0), start(clock())
 {
     for (int i = 1; argv[i]; i++)
     {
@@ -18,7 +18,6 @@ PmergeMe::PmergeMe(char **argv) : size(0), comp_nbr(0)
     }
     set.clear();
 }
-int PmergeMe::getCompNbr() { return comp_nbr; }
 void PmergeMe::swap(std::vector<int>::iterator a, std::vector<int>::iterator b)
 {
     if (*b > *a)
@@ -27,13 +26,22 @@ void PmergeMe::swap(std::vector<int>::iterator a, std::vector<int>::iterator b)
     *b = *a;
     *a = tmp;
 }
+void PmergeMe::sortPairs(std::vector<int>::iterator begin, std::vector<int>::iterator end)
+{
+    for (std::vector<int>::iterator it = begin; it != end - 1 && it != end; it += 2)
+        swap(it, it + 1);
+}
+void PmergeMe::execVectorSort()
+{
+    recursive(vec.begin(), vec.end());
+}
+
 void PmergeMe::recursive(std::vector<int>::iterator begin, std::vector<int>::iterator end)
 {
     int size = std::distance(begin, end);
     if (size <= 1)
         return;
-    for (std::vector<int>::iterator it = begin; it != end - 1 && it != end; it += 2)
-        swap(it, it + 1);
+    sortPairs(begin, end);
 
     std::vector<int> largeNbr;
     std::vector<int> smallNbr;
@@ -90,8 +98,11 @@ int PmergeMe::dichotomousSearch(std::vector<int> &vector, int value)
 
 void PmergeMe::execute()
 {
-
-    recursive(vec.begin(), vec.end());
+    execVectorSort();
+    clock_t endExecVec = clock();
+    print_vec();
+    double time_taken = double(endExecVec - start) / CLOCKS_PER_SEC;
+    std::cout << "Time to process: " << time_taken << " seconds" << std::endl;
 }
 //---- print a delete -------
 
@@ -105,5 +116,6 @@ void PmergeMe::print_vec()
     {
         std::cout << *it << " ";
     }
-    std::cout << std::endl;
+    std::cout << std::endl
+              << std::endl;
 }
