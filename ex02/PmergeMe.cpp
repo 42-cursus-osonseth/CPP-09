@@ -31,23 +31,12 @@ void PmergeMe::sortPairs(std::vector<int>::iterator begin, std::vector<int>::ite
     for (std::vector<int>::iterator it = begin; it != end - 1 && it != end; it += 2)
         swap(it, it + 1);
 }
-void PmergeMe::execVectorSort()
-{
-    recursive(vec.begin(), vec.end());
-}
-
-void PmergeMe::recursive(std::vector<int>::iterator begin, std::vector<int>::iterator end)
+void PmergeMe::groupSmallAndLarge(std::vector<int>::iterator begin, std::vector<int>::iterator end, std::vector<int> &smallNbr, std::vector<int> &largeNbr)
 {
     int size = std::distance(begin, end);
-    if (size <= 1)
-        return;
-    sortPairs(begin, end);
-
-    std::vector<int> largeNbr;
-    std::vector<int> smallNbr;
     if (size % 2 == 0)
-    {
 
+    {
         for (std::vector<int>::iterator it = begin; it != end; it += 2)
             smallNbr.push_back(*it);
 
@@ -60,7 +49,6 @@ void PmergeMe::recursive(std::vector<int>::iterator begin, std::vector<int>::ite
             }
             largeNbr.push_back(*it);
         }
-        recursive(largeNbr.begin(), largeNbr.end());
     }
     else
     {
@@ -69,14 +57,29 @@ void PmergeMe::recursive(std::vector<int>::iterator begin, std::vector<int>::ite
         for (std::vector<int>::iterator it = begin + 1; it != end; it += 2)
             largeNbr.push_back(*it);
         smallNbr.push_back(*(end - 1));
-        recursive(largeNbr.begin(), largeNbr.end());
     }
+}
+void PmergeMe::insertSmall(std::vector<int>::iterator begin, std::vector<int> &smallNbr, std::vector<int> &largeNbr)
+{
     for (std::vector<int>::iterator it = smallNbr.begin(); it != smallNbr.end(); it++)
     {
         int pos = dichotomousSearch(largeNbr, *it);
         largeNbr.insert(largeNbr.begin() + pos, *it);
     }
     std::copy(largeNbr.begin(), largeNbr.end(), begin);
+}
+
+void PmergeMe::recursiveMergeInsert(std::vector<int>::iterator begin, std::vector<int>::iterator end)
+{
+    int size = std::distance(begin, end);
+    if (size <= 1)
+        return;
+    sortPairs(begin, end);
+    std::vector<int> largeNbr;
+    std::vector<int> smallNbr;
+    groupSmallAndLarge(begin, end, smallNbr, largeNbr);
+    recursiveMergeInsert(largeNbr.begin(), largeNbr.end());
+    insertSmall(begin, smallNbr, largeNbr);
 }
 int PmergeMe::dichotomousSearch(std::vector<int> &vector, int value)
 {
@@ -95,21 +98,21 @@ int PmergeMe::dichotomousSearch(std::vector<int> &vector, int value)
     }
     return left;
 }
-
-void PmergeMe::execute()
+void PmergeMe::executeVectorSort()
 {
-    execVectorSort();
+    print_vec();
+    recursiveMergeInsert(vec.begin(), vec.end());
     clock_t endExecVec = clock();
     print_vec();
     double time_taken = double(endExecVec - start) / CLOCKS_PER_SEC;
-    std::cout << "Time to process: " << time_taken << " seconds" << std::endl;
+    std::cout << "Time to process a range of " << vec.size() << " elements with std::vector : " << time_taken << " seconds" << std::endl;
 }
-//---- print a delete -------
 
-void PmergeMe::print_arg()
+void PmergeMe::execute()
 {
-    std::cout << arg << std::endl;
+    executeVectorSort();
 }
+
 void PmergeMe::print_vec()
 {
     for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it)
