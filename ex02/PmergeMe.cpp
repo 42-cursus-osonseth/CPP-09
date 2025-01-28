@@ -22,14 +22,10 @@ int PmergeMe::getCompNbr() { return comp_nbr; }
 void PmergeMe::swap(std::vector<int>::iterator a, std::vector<int>::iterator b)
 {
     if (*b > *a)
-    {
-        comp_nbr++;
         return;
-    }
     int tmp = *b;
     *b = *a;
     *a = tmp;
-    comp_nbr++;
 }
 void PmergeMe::recursive(std::vector<int>::iterator begin, std::vector<int>::iterator end)
 {
@@ -38,7 +34,7 @@ void PmergeMe::recursive(std::vector<int>::iterator begin, std::vector<int>::ite
         return;
     for (std::vector<int>::iterator it = begin; it != end - 1 && it != end; it += 2)
         swap(it, it + 1);
-       
+
     std::vector<int> largeNbr;
     std::vector<int> smallNbr;
     if (size % 2 == 0)
@@ -82,26 +78,13 @@ int PmergeMe::dichotomousSearch(std::vector<int> &vector, int value)
     while (left <= right)
     {
         int mid = left + (right - left) / 2;
-
-       
         if (vector[mid] == value)
-        {
-            comp_nbr++;
             return mid;
-        }
-       
         else if (vector[mid] > value)
-        {
-            comp_nbr++;
             right = mid - 1;
-        }
-        
         else
-        {
             left = mid + 1;
-        }
     }
-   
     return left;
 }
 
