@@ -42,6 +42,14 @@ void BitcoinExchange::close_files()
     if (_dataBase_File.is_open())
         _dataBase_File.close();
 }
+bool BitcoinExchange::limitValue(std::string str)
+{
+    std::istringstream iss(str);
+    iss >> _value;
+    if (_value > 150000)
+        return false;
+    return true;
+}
 void BitcoinExchange::readAndStockDatabase()
 {
     std::string line;
@@ -56,6 +64,8 @@ void BitcoinExchange::readAndStockDatabase()
                 continue;
             if (!isValidDatabaseLine(line))
                 throw BitcoinExchange::DatabaseLineInvalidException();
+            if (!limitValue(line.substr(11)))
+                throw std::length_error("Database line ignored (prive above 150000)");
             std::string key = line.substr(0, 10);
             std::istringstream iss(line.substr(11));
             float value;
@@ -150,7 +160,8 @@ bool BitcoinExchange::isValidValue(std::string str)
 bool BitcoinExchange::lineValidation(std::string str)
 {
     try
-    {   if (_firstLine && str == "date | value")
+    {
+        if (_firstLine && str == "date | value")
             return false;
         if (!isValidDate(str.substr(0, 10)))
             throw BitcoinExchange::BadInputException();
@@ -202,7 +213,10 @@ void BitcoinExchange::printPreviousDateValue(std::string line)
         float v;
         iss >> v;
         v *= it->second;
-        std::cout << line.substr(0, 10) << " => " << std::right << std::setw(3) << line.substr(13) << " = " << v << std::endl;
+        std::cout << std::fixed << std::setprecision(2)
+                  << line.substr(0, 10) << " => "
+                  << std::right << std::setw(3) << line.substr(13)
+                  << " = " << v << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -215,5 +229,8 @@ void BitcoinExchange::printFinalValue(std::string line)
     float v;
     iss >> v;
     v *= dataBase[line.substr(0, 10)];
-    std::cout << line.substr(0, 10) << " => " << std::right << std::setw(3) << line.substr(13) << " = " << v << std::endl;
+    std::cout << std::fixed << std::setprecision(2)
+              << line.substr(0, 10) << " => "
+              << std::right << std::setw(3) << line.substr(13)
+              << " = " << v << std::endl;
 }

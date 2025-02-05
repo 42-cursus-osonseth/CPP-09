@@ -2,7 +2,7 @@
 
 RPN::RPN() {}
 RPN::~RPN() {}
-RPN::RPN(char **argv) : _expression(argv[1]) {}
+RPN::RPN(char **argv) : _expression(argv[1]), _result(0) {}
 
 bool RPN::validToken()
 {
@@ -43,18 +43,18 @@ bool RPN::performCalculation()
         switch (_token[0])
         {
         case '+':
-            if (a > LONG_MAX - b)
-                throw std::overflow_error("Arithmetic overflow occurred.");
+            if ((b > 0 && a > LONG_MAX - b) || (b < 0 && a < LONG_MIN - b))
+                throw std::overflow_error("Arithmetic overflow occurred1.");
             a += b;
             break;
         case '-':
             if (a < LONG_MIN + b)
-                throw std::overflow_error("Arithmetic underflow occurred.");
+                throw std::overflow_error("Arithmetic underflow occurred2.");
             a -= b;
             break;
         case '*':
-            if (a > LONG_MAX / b)
-                throw std::overflow_error("Arithmetic overflow occurred.");
+            if (b != 0 && (a > LONG_MAX / b))
+                throw std::overflow_error("Arithmetic overflow occurred3.");
             a *= b;
             break;
         case '/':
@@ -86,7 +86,7 @@ void RPN::execute()
         while (iss >> _token)
         {
             if (!validToken())
-                break;
+                throw std::invalid_argument("stopping execution");
             if (_token[0] >= '0' && _token[0] <= '9')
                 pushNumber();
             else
@@ -94,11 +94,14 @@ void RPN::execute()
                 if (_stack.size() < 2)
                     throw std::logic_error("invalid format : less 2 operandes");
                 if (!performCalculation())
-                    break;
+                    throw std::runtime_error("Calculation error, stopping execution.");
             }
         }
+        _result = _stack.top();
+        _stack.pop();
         if (!_stack.empty())
             throw std::logic_error("Error : too many operands");
+        std::cout << _result << std::endl;
     }
     catch (const std::exception &e)
     {

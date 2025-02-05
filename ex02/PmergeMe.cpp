@@ -27,12 +27,12 @@ void PmergeMe::execute()
 {
     print_vec();
     endConstructor = clock();
-    clock_t startExecVec = clock();
+    startExecVec = clock();
     recursiveMergeInsert<std::vector<int>::iterator, std::vector<int> >(vec.begin(), vec.end());
-    clock_t endExecVec = clock();
-    clock_t startExecDeque = clock();
+    endExecVec = clock();
+    startExecDeque = clock();
     recursiveMergeInsert<std::deque<int>::iterator, std::deque<int> >(deque.begin(), deque.end()); 
-    clock_t endExecDeque = clock();
+    endExecDeque = clock();
     print_vec();
     double timeTakenVecSort = (double(endExecVec - startExecVec) / CLOCKS_PER_SEC) + (double(endConstructor - startConstructor) / CLOCKS_PER_SEC);
     std::cout << "Time to process a range of " << vec.size() << " elements with std::vector : " << timeTakenVecSort * 1000 << " ms" << std::endl;

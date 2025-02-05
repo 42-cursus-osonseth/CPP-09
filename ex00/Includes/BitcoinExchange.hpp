@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <exception>
+#include <cfloat>
 #include <map>
 #include "Colors.hpp"
 
@@ -34,6 +35,7 @@ private:
     bool isLeapYear(int year);
     void printFinalValue(std::string line);
     void printPreviousDateValue(std::string str);
+    bool limitValue(std::string str);
 
 public:
     BitcoinExchange();

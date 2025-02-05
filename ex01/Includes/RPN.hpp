@@ -13,6 +13,7 @@ private:
     std::string _expression;
     std::string _token;
     std::stack<long int> _stack;
+    long int _result;
     bool validToken();
     void pushNumber();
     bool performCalculation();
