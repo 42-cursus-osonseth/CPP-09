@@ -29,7 +29,8 @@ private:
     clock_t startExecDeque;
     clock_t endExecDeque;
 
-    void print_vec();
+    void print_vec_after();
+    void print_vec_before();
     void print_deque();
 
     template <typename T>

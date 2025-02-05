@@ -25,7 +25,7 @@ PmergeMe::PmergeMe(char **argv) : size(0)
 
 void PmergeMe::execute()
 {
-    print_vec();
+    print_vec_before();
     endConstructor = clock();
     startExecVec = clock();
     recursiveMergeInsert<std::vector<int>::iterator, std::vector<int> >(vec.begin(), vec.end());
@@ -33,16 +33,25 @@ void PmergeMe::execute()
     startExecDeque = clock();
     recursiveMergeInsert<std::deque<int>::iterator, std::deque<int> >(deque.begin(), deque.end()); 
     endExecDeque = clock();
-    print_vec();
+    print_vec_after();
     double timeTakenVecSort = (double(endExecVec - startExecVec) / CLOCKS_PER_SEC) + (double(endConstructor - startConstructor) / CLOCKS_PER_SEC);
     std::cout << "Time to process a range of " << vec.size() << " elements with std::vector : " << timeTakenVecSort * 1000 << " ms" << std::endl;
     double timeTakenDequeSort = (double(endExecDeque - startExecDeque) / CLOCKS_PER_SEC) + (double(endConstructor - startConstructor) / CLOCKS_PER_SEC);
     std::cout << "Time to process a range of " << vec.size() << " elements with std::deque : " << timeTakenDequeSort * 1000 << " ms" << std::endl;
 }
 
-void PmergeMe::print_vec()
+void PmergeMe::print_vec_after()
 {
     for (std::vector<int>::reverse_iterator it = vec.rbegin(); it != vec.rend(); ++it)
+    {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl
+              << std::endl;
+}
+void PmergeMe::print_vec_before()
+{
+    for (std::vector<int>::iterator it = vec.begin(); it != vec.end(); ++it)
     {
         std::cout << *it << " ";
     }

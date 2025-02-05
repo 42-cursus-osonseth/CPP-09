@@ -65,7 +65,7 @@ void BitcoinExchange::readAndStockDatabase()
             if (!isValidDatabaseLine(line))
                 throw BitcoinExchange::DatabaseLineInvalidException();
             if (!limitValue(line.substr(11)))
-                throw std::length_error("Database line ignored (prive above 150000)");
+                throw std::length_error("Database line ignored (price above 150000)");
             std::string key = line.substr(0, 10);
             std::istringstream iss(line.substr(11));
             float value;
